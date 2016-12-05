@@ -1,99 +1,81 @@
 import { Component } from '@angular/core';
+import {MarkerService} from './services/marker.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  providers: [MarkerService]
 })
 export class AppComponent {
-  zoom:  number=10;
-  lat: number = 32.08088;
-  lng: number = 34.78057;
-
+  // Zoom level
+  zoom: number = 10;
+  // Start Position
+  lat: number = 31.76904;
+  lng: number = 35.21633;
+  // Values
   markerName:string;
   markerLat:string;
   markerLng:string;
   markerDraggable:string;
+  // Markers
+  markers: marker[];
 
-  markers:marker[]=[
-    {
-      name:'City 1',
-      lat: 32.81841,
-      lng:  34.9885,
-      draggable:true
-    },
-    {
-      name:'City 2',
-      lat: 31.79213 ,
-      lng: 34.64966,
-      draggable:true
-    },
-    {
-      name:'City 3',
-      lat: 31.76904  ,
-      lng: 35.21633,
-      draggable:true
-    },
-    {
-      name:'City 4',
-      lat: 32.81149,
-      lng:  35.11323,
-      draggable:true
-    }
-    ,
-    {
-      name:'City 4',
-      lat: 32.08088,
-      lng:  34.78057,
-      draggable:true
-    }
-
-  ];
-
-  constructor(){}
-  clickedMarker(marker: marker, index: number){
-    console.log('Clicked Marker :'+marker.name+' index'+index );
+  constructor(private _markerService:MarkerService){
+    this.markers = this._markerService.getMarkers();
   }
-  mapClicked($event: any){
-    var newMarker= {
-      name:'untitle',
-      lat:$event.coords.lat,
-      lng:$event.coords.lng,
-      draggable: false
+
+  clickedMarker(marker:marker, index:number){
+    console.log('Clicked Marker: '+marker.name+' at index '+index);
+  }
+
+  mapClicked($event:any){
+    console.log('Map Clicked');
+    var newMarker = {
+      name: 'Untitled',
+      lat: $event.coords.lat,
+      lng: $event.coords.lng,
+      draggable:false
     }
+
     this.markers.push(newMarker);
   }
-  markerDragEnd(marker:any, $event:any){
-    console.log('drag End',marker, $event);
 
-    var updMarker={
+  markerDragEnd(marker:any, $event:any){
+    console.log('dragEnd', marker, $event);
+
+    var updMarker = {
       name: marker.name,
       lat: parseFloat(marker.lat),
       lng: parseFloat(marker.lng),
-      draggable: false
+      draggable:false
     }
-    var newLat=$event.coords.lat;
-    var newLng=$event.coords.lng;
+
+    var newLat = $event.coords.lat;
+    var newLng = $event.coords.lng;
+
   }
 
   addMarker(){
-    console.log(' add Marker');
-    if(this.markerDraggable=='yes'){
-      var isDraggable=true;
+    console.log('Adding Marker');
+    if(this.markerDraggable == 'yes'){
+      var isDraggable = true;
+    } else {
+      var isDraggable = false;
     }
-    else{
-      var isDraggable=false;
-    }
-    var newMarker={
-      name: this.markerName,
-      lat:parseFloat(this.markerLat),
-      lng:parseFloat(this.markerLng),
+
+    var newMarker = {
+      name:this.markerName,
+      lat: parseFloat(this.markerLat),
+      lng: parseFloat(this.markerLng),
       draggable:isDraggable
     }
-    this.markers.push(newMarker);
 
+    this.markers.push(newMarker);
+    this._markerService.addMarker(newMarker);
   }
 }
+
 // Marker Type
 interface marker{
   name?:string;
@@ -101,4 +83,3 @@ interface marker{
   lng: number;
   draggable:boolean;
 }
-
