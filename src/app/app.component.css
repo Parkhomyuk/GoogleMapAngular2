@@ -1,3 +1,10 @@
 .sebm-google-map-container {
   height: 300px;
 }
+.navbar{
+  background-color: #e78f08;
+
+}
+.navbar-brand{
+  color:black;
+}
